@@ -1,2 +1,2 @@
 # Group-Green
-Group Green - Max, Oliwia Xander - finding losses
+Group Green - Max, Oliwia, Xander - finding losses
