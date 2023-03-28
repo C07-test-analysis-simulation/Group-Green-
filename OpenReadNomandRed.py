@@ -1,5 +1,5 @@
 #order of columns is: L1    L2    C1    P1    P2    S1    S2    CH     should it be tracked(Binary)      SatID
-#:)
+
 # imports
 import numpy as np
 from datetime import datetime
@@ -45,12 +45,23 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header): #handles 
 
         if len(CurrentLine) == 9: #now if there is a trackingloss, it gives an extra entry. I do some inefficient things here but it works. I essentially skip the 3rd entry(index 2) as to drop the extra number
             CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]  # add TStamp, iftracked and SatID here
+            if CurrentLine[0] == 0:
+                TwoDArray[SatIDNumb][0] = CurrentLine[0]
+                for column in range(1, 10):
+                    TwoDArray[SatIDNumb][column] = CurrentLine[column+1]
 
+            else:
+                TwoDArray[SatIDNumb][0] = CurrentLine[0]
+                TwoDArray[SatIDNumb][1] = CurrentLine[1]  # means that satID number 0 is always ampty as it doesnt exist irl but does here because of python index things
+                for column in range(2, 10):
+                    TwoDArray[SatIDNumb][column] = CurrentLine[column+1]  # means that satID number 0 is always empty as it doesnt exist irl but does here because of python index things
+
+        if len(CurrentLine) == 10:
+            CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]
             TwoDArray[SatIDNumb][0] = CurrentLine[0]
-            TwoDArray[SatIDNumb][1] = CurrentLine[1]  # means that satID number 0 is always ampty as it doesnt exist irl but does here because of python index things
+            TwoDArray[SatIDNumb][1] = CurrentLine[2]
             for column in range(2, 10):
-                TwoDArray[SatIDNumb][column] = CurrentLine[column+1]  # means that satID number 0 is always empty as it doesnt exist irl but does here because of python index things
-
+                TwoDArray[SatIDNumb][column] = CurrentLine[column+2]
 
         LineAftHeader += 2
     return TwoDArray
@@ -91,8 +102,8 @@ if __name__ == '__main__' :
 
     print("done loading, now printing...")
     print(len(ListOfDataArrays), 60*60*24) #If its the same its awesome.
-    print(len(ListOfDataArrays[0]), TotNumbSat)#I wouldnt print the entire thing because python printing is kinda slow, just pick an index between 0 and (60*60*24-1) to test
-    print(ListOfTimeStamps[0])
+    print(ListOfDataArrays[511])#I wouldnt print the entire thing because python printing is kinda slow, just pick an index between 0 and (60*60*24-1) to test
+    print(ListOfTimeStamps[511])
 
 
 
