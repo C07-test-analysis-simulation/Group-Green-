@@ -1,20 +1,15 @@
-from OpenReadNomandRed import *
+from OpenReadNomandRedV2 import *
 import numpy as np
 from datetime import datetime
 
 '''
-General notes & remarks / issues to resolve:
-- some durations are 0 s, possible causes -> bug in code that reads same date twice
-or loss lasts precisely 1s so appears only in one time reading (see eg. timestamp 13  9  2  0  0 42.6200000 for satellite 21), so time_begin and time_end belong to the same timestamp
-I'm not sure how we want to treat it, because it is a loss noted in data but apparently has duration <=1s
+General notes & remarks:
 - I assume time_end as time of first non-zero reading after (unexpected) loss
-- the import 'from OpenReadNomandRed import *' takes quite a bit -> possile improvement
+- the import 'from OpenReadNomandRedV2 import *' takes quite a bit -> possile improvement
 - as data is appended during the checking, OverviewTable is kinda ordered with increasing time & sat_id since we check it in that order
-- please double (triple!) check everything, it doesn't give an error but I may have messed something up with indexing (it happens quite often ^^)
-- tbh I don't know how to validate the data in the table other than manually compare (which is a pain), so ideas & feedback are very welcome
 '''
 
-def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
+def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
     print("we started")
     if str(L2orL1) == "L2": #pick which loss we're looking at
         L = 1
@@ -22,7 +17,7 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
         L = 0
 
     OverviewTable = []
-    for i in range(1, TotNumbSat): #i is satellite id 
+    for i in range(1, 33): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
 
@@ -73,12 +68,12 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
 
     return OverviewTable
 
-table = FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, 'L2')
+table = FindLosses(ListOfDataArrays, ListOfTimeStamps, 'L2')
 print("Loss Table:","\n", table,
       "\n Nr of losses:", len(table),
       "\n Total duration:", np.sum(table[:, 2], axis=0), "s")
 
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
 #           rows -> all losses "listed" (so length is total nr of losses)
-#to use: - copy names TotNumbSat, ListOfDataArrays, ListOfTimeStamps (imported from OpenReadNomandRed)
+#to use: - copy names ListOfDataArrays, ListOfTimeStamps (imported from OpenReadNomandRedV2)
 #        - ENTER "L2" or "L1" (AS STRING!!!) to pick whether you want to track L2 or L1 losses
