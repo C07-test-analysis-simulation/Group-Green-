@@ -1,11 +1,10 @@
-from OpenReadNomandRedV2 import *
+import OpenReadNomandRedV2
 import numpy as np
 from datetime import datetime
 
 '''
 General notes & remarks:
 - I assume time_end as time of first non-zero reading after (unexpected) loss
-- the import 'from OpenReadNomandRedV2 import *' takes quite a bit -> possile improvement
 - as data is appended during the checking, OverviewTable is kinda ordered with increasing time & sat_id since we check it in that order
 '''
 
@@ -20,7 +19,7 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
     for i in range(1, 33): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
-        #print("Looking at sat_id", i)
+        print("Looking at sat_id", i)
 
         for Time in range(len(ListOfTimeStamps)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
             DummyArray2 = ListOfDataArrays[Time] #one time slice of the read file, DummyArray2[sat_id][parameter]
@@ -69,10 +68,14 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
 
     return OverviewTable
 
-table = FindLosses(ListOfDataArrays, ListOfTimeStamps, 'L2')
+table = FindLosses(OpenReadNomandRedV2.ListOfDataArrays, OpenReadNomandRedV2.ListOfTimeStamps, 'L2')
+
 print("Loss Table:","\n", table,
       "\n Nr of losses:", len(table),
-      "\n Total duration:", np.sum(table[:, 2], axis=0), "s")
+      "\n Total duration:", np.sum(table[:, 2], axis=0), "s",
+      "\n Average duation time:", np.average(table[:, 2], axis=0), "s"
+      "\n Median duation time:", np.median(table[:, 2], axis=0), "s",
+      "\n Percentage of losses:", 100*len(table)/len(OpenReadNomandRedV2.ListOfDataArrays), "%") #ask and change later
 
 
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
