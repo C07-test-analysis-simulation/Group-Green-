@@ -35,7 +35,6 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header): #handles 
         CurrentLine = lines[HeaderLineNumber+LineAftHeader+1]+lines[HeaderLineNumber+LineAftHeader+2]
         CurrentLine = CurrentLine.split()
 
-
         if len(CurrentLine) == 8: #This is for the normal situation without losses, if there are losses it adds an extra entry hence len would be 9
             CurrentLine = CurrentLine+[str(int(1)), str(int(SatIDNumb))] #add TStamp, iftracked and SatID here
             # I have the lines as nice lists of strings now, lets put it into an array
@@ -43,7 +42,7 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header): #handles 
                 TwoDArray[SatIDNumb][column] = CurrentLine[column]#means that satID number 0 is always ampty as it doesnt exist irl but does here because of python index things
 
 
-        if len(CurrentLine) == 9: #now if there is a trackingloss, it gives an extra entry. I do some inefficient things here but it works. I essentially skip the 3rd entry(index 2) as to drop the extra number
+        elif len(CurrentLine) == 9: #now if there is a trackingloss, it gives an extra entry. I do some inefficient things here but it works. I essentially skip the 3rd entry(index 2) as to drop the extra number
             CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]  # add TStamp, iftracked and SatID here
             if CurrentLine[0] == 0:
                 TwoDArray[SatIDNumb][0] = CurrentLine[0]
@@ -56,7 +55,7 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header): #handles 
                 for column in range(2, 10):
                     TwoDArray[SatIDNumb][column] = CurrentLine[column+1]  # means that satID number 0 is always empty as it doesnt exist irl but does here because of python index things
 
-        if len(CurrentLine) == 10:
+        elif len(CurrentLine) == 10:
             CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]
             TwoDArray[SatIDNumb][0] = CurrentLine[0]
             TwoDArray[SatIDNumb][1] = CurrentLine[2]
@@ -102,8 +101,9 @@ if __name__ == '__main__' :
 
     print("done loading, now printing...")
     print(len(ListOfDataArrays), 60*60*24) #If its the same its awesome.
-    print(ListOfDataArrays[511])#I wouldnt print the entire thing because python printing is kinda slow, just pick an index between 0 and (60*60*24-1) to test
-    print(ListOfTimeStamps[511])
+    
+    print(ListOfTimeStamps[26347])
+    print(ListOfDataArrays[26347])#I wouldnt print the entire thing because python printing is kinda slow, just pick an index between 0 and (60*60*24-1) to test
 
 
 
