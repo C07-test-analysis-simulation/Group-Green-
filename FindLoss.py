@@ -20,6 +20,7 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
     for i in range(1, 33): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
+        #print("Looking at sat_id", i)
 
         for Time in range(len(ListOfTimeStamps)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
             DummyArray2 = ListOfDataArrays[Time] #one time slice of the read file, DummyArray2[sat_id][parameter]
@@ -73,7 +74,9 @@ print("Loss Table:","\n", table,
       "\n Nr of losses:", len(table),
       "\n Total duration:", np.sum(table[:, 2], axis=0), "s")
 
+
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
 #           rows -> all losses "listed" (so length is total nr of losses)
 #to use: - copy names ListOfDataArrays, ListOfTimeStamps (imported from OpenReadNomandRedV2)
 #        - ENTER "L2" or "L1" (AS STRING!!!) to pick whether you want to track L2 or L1 losses
+#        - dd= table[0][0].strftime("%m/%d/%Y, %H:%M:%S.%f") -> date format to string
