@@ -94,9 +94,10 @@ def ReadRest(lines, NOM):
 
 ListOfDataArrays = []
 ListOfTimeStamps = []
-for i in range(29):
+for i in range(3):
     print(i)
     index = 2450+10*i
+    #remember to update path and set NOM to True/False according to what you want!
     filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data red\To read\repro.goce{}.13o".format(index)
     lines = ReadFile(filename)
     CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=False)
