@@ -32,7 +32,7 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header, lines): #h
                 TwoDArray[SatIDNumb][column] = CurrentLine[column]#means that satID number 0 is always ampty as it doesnt exist irl but does here because of python index things
 
 
-        if len(CurrentLine) == 9: #now if there is a trackingloss, it gives an extra entry. I do some inefficient things here but it works. I essentially skip the 3rd entry(index 2) as to drop the extra number
+        elif len(CurrentLine) == 9: #now if there is a trackingloss, it gives an extra entry. I do some inefficient things here but it works. I essentially skip the 3rd entry(index 2) as to drop the extra number
             CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]  # add TStamp, iftracked and SatID here
             if CurrentLine[0] == 0:
                 TwoDArray[SatIDNumb][0] = CurrentLine[0]
@@ -45,7 +45,7 @@ def ReadLinesAftHeader(TotNumbSat, NumbSat, HeaderLineNumber, header, lines): #h
                 for column in range(2, 10):
                     TwoDArray[SatIDNumb][column] = CurrentLine[column+1]  # means that satID number 0 is always empty as it doesnt exist irl but does here because of python index things
 
-        if len(CurrentLine) == 10:
+        elif len(CurrentLine) == 10:
             CurrentLine = CurrentLine + [str(int(1)), str(int(SatIDNumb))]
             TwoDArray[SatIDNumb][0] = CurrentLine[0]
             TwoDArray[SatIDNumb][1] = CurrentLine[2]
@@ -97,7 +97,7 @@ ListOfTimeStamps = []
 for i in range(29):
     print(i)
     index = 2450+10*i
-    filename = r"C:\Users\xande\OneDrive\Documenten\AE BSc 2\Q3\project\GOCE\red files\repro.goce{}.13o".format(index)
+    filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data red\To read\repro.goce{}.13o".format(index)
     lines = ReadFile(filename)
     CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=False)
     ListOfTimeStamps += CurrentListOfTimeStamps
