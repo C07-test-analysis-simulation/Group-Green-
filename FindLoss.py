@@ -22,11 +22,11 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
         L = 0
 
     OverviewTable = []
-    for i in range(1, 3): #i is satellite id 
+    for i in range(1, TotNumbSat): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
 
-        for Time in range(len(ListOfDataArrays)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
+        for Time in range(len(ListOfTimeStamps)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
             DummyArray2 = ListOfDataArrays[Time] #one time slice of the read file, DummyArray2[sat_id][parameter]
             if Time > 0:
                 PreviousDummy = ListOfDataArrays[Time - 1] #same, for previous time stamp
@@ -34,9 +34,12 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
                 NextDummy = ListOfDataArrays[Time + 1] #same, for next time stamp
 
             if int(DummyArray2[i][8]) == 1: #if it's supposed to be tracked
+                #if DummyArray2[i][L] == 0.0 and Time%10 == 0.0:
+                  #  print("Zero!", ListOfTimeStamps[Time])
                     
                 if DummyArray2[i][L] != 0.0 and PreviousDummy[i][L] == 0.0 and BeginLossHad == False: #check if begin loss occured
                     BeginLossHad = True
+                    #print("Begin loss ends!", ListOfTimeStamps[Time])
                 
                 if DummyArray2[i][L] == 0.0 and BeginLossHad == True: #this is not the first loss -> unexpected!
                     if LossNoted == False: #only first 0 detected, we don't want to record every 0
@@ -46,6 +49,7 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
                         LossNoted = True #set to true to not note further 0s in the loss
 
                     if NextDummy[i][8] == 0.0: #oh it was end loss! after 0s it's not supposed to be tracked 
+                       # print("End loss!", ListOfTimeStamps[Time])
                         BeginLossHad = False
                         LossNoted = False
 
@@ -64,7 +68,6 @@ def FindLosses(TotNumbSat, ListOfDataArrays, ListOfTimeStamps, L2orL1):
             elif int(DummyArray2[i][8]) == 0.0:
                 BeginLossHad = False
                 LossNoted = False
-
 
     OverviewTable = np.array(OverviewTable)            
 
