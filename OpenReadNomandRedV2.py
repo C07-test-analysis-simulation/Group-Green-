@@ -80,7 +80,8 @@ def ReadRest(lines, NOM):
         header = header.split() #split on any whitespace, incl mult white spaces
         #print(header)
         NumbSat = int(header[7])
-        if NumbSat == 12 and NOM == True:
+        x = "-" in header[-1]
+        if NumbSat == 12 and NOM == True and x == True:
             dummy = header[-1].split('-')
             header[-1] = dummy[0]
             header.append(dummy[1])
@@ -94,7 +95,7 @@ def ReadRest(lines, NOM):
 
 ListOfDataArrays = []
 ListOfTimeStamps = []
-for i in range(3):
+for i in range(29):
     print(i)
     index = 2450+10*i
     #remember to update path and set NOM to True/False according to what you want!
@@ -103,6 +104,4 @@ for i in range(3):
     CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=False)
     ListOfTimeStamps += CurrentListOfTimeStamps
     ListOfDataArrays += CurrentListOfDataArrays
-print(ListOfTimeStamps[-1], "ok")
-
-
+#print(ListOfTimeStamps[-1], "ok")

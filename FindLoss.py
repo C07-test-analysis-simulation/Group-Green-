@@ -16,9 +16,12 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
         L = 0
 
     OverviewTable = []
+    CountTracks = 0
+    CountTrackWLoss = 0
     for i in range(1, 33): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
+        FirstUnexLossAlHad = False
         print("Looking at sat_id", i)
 
         for Time in range(len(ListOfTimeStamps)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
@@ -34,6 +37,7 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
                     
                 if DummyArray2[i][L] != 0.0 and PreviousDummy[i][L] == 0.0 and BeginLossHad == False: #check if begin loss occured
                     BeginLossHad = True
+                    CountTracks += 1
                     #print("Begin loss ends!", ListOfTimeStamps[Time])
                 
                 if DummyArray2[i][L] == 0.0 and BeginLossHad == True: #this is not the first loss -> unexpected!
@@ -53,29 +57,38 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
                     sat_id = i
                     td = time_end-time_begin
                     duration = td.total_seconds() + 1
-                    RunningLossList.append(time_end)
-                    RunningLossList.append(duration)
-                    RunningLossList.append(sat_id)
-                    OverviewTable.append(RunningLossList)
+                    if duration > 20: #cut-off
+                        RunningLossList.append(time_end)
+                        RunningLossList.append(duration)
+                        RunningLossList.append(sat_id)
+                        OverviewTable.append(RunningLossList)
+                        if FirstUnexLossAlHad == False:
+                            CountTrackWLoss += 1
+                            FirstUnexLossAlHad = True
 
                     LossNoted = False #finished gathering data from one loss
 
             elif int(DummyArray2[i][8]) == 0.0:
                 BeginLossHad = False
                 LossNoted = False
+                FirstUnexLossAlHad = False
 
     OverviewTable = np.array(OverviewTable)            
 
-    return OverviewTable
+    return OverviewTable, CountTracks, CountTrackWLoss
 
-table = FindLosses(OpenReadNomandRedV2.ListOfDataArrays, OpenReadNomandRedV2.ListOfTimeStamps, 'L2')
 
-print("Loss Table:","\n", table,
+table, tracks, tracks_loss = FindLosses(OpenReadNomandRedV2.ListOfDataArrays, OpenReadNomandRedV2.ListOfTimeStamps, 'L2')
+
+print(#"Loss Table:", "\n", table,
       "\n Nr of losses:", len(table),
       "\n Total duration:", np.sum(table[:, 2], axis=0), "s",
       "\n Average duation time:", np.average(table[:, 2], axis=0), "s"
-      "\n Median duation time:", np.median(table[:, 2], axis=0), "s",
-      "\n Percentage of losses:", 100*len(table)/len(OpenReadNomandRedV2.ListOfDataArrays), "%") #ask and change later
+      "\n Median duation time:",np.median(table[:, 2], axis=0), "s",
+      "\n Percentage of losses:", 100 * len(table) / len(OpenReadNomandRedV2.ListOfDataArrays), "%")  # ask and change later
+print("tracks:", tracks,
+      "\ntracks with loss:" , tracks_loss, 
+      "\n ratio is", tracks_loss/tracks)
 
 
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
