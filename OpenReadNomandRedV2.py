@@ -98,10 +98,11 @@ ListOfTimeStamps = []
 for i in range(29):
     print(i)
     index = 2450+10*i
+    #print(index)
     #remember to update path and set NOM to True/False according to what you want!
-    filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data red\To read\repro.goce{}.13o".format(index)
+    filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data nom\To read\repro.goce{}.13o".format(index)
     lines = ReadFile(filename)
-    CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=False)
+    CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=True)
     ListOfTimeStamps += CurrentListOfTimeStamps
     ListOfDataArrays += CurrentListOfDataArrays
 #print(ListOfTimeStamps[-1], "ok")

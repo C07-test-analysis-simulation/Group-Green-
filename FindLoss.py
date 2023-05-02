@@ -6,22 +6,24 @@ from datetime import datetime
 General notes & remarks:
 - I assume time_end as time of first non-zero reading after (unexpected) loss
 - as data is appended during the checking, OverviewTable is kinda ordered with increasing time & sat_id since we check it in that order
+
+Fixing ideas:
+- re-define the percentage (duration of loss vs duration of track ?)
 '''
 
-def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
+def FindLosses(ListOfDataArrays, ListOfTimeStamps):
     print("we started")
-    if str(L2orL1) == "L2": #pick which loss we're looking at
-        L = 1
-    if str(L2orL1) == "L1":
-        L = 0
+#    if str(L2orL1) == "L2": #pick which loss we're looking at
+ #       L = 1
+  #  if str(L2orL1) == "L1":
+   #     L = 0
 
     OverviewTable = []
-    CountTracks = 0
-    CountTrackWLoss = 0
+    TrackDurations = []
     for i in range(1, 33): #i is satellite id 
         BeginLossHad = False
         LossNoted = False
-        FirstUnexLossAlHad = False
+        TrackDurationCount = 0
         print("Looking at sat_id", i)
 
         for Time in range(len(ListOfTimeStamps)): #choosing variables -> ListOfDataArrays[time][sat_id][parameter]
@@ -32,63 +34,62 @@ def FindLosses(ListOfDataArrays, ListOfTimeStamps, L2orL1):
                 NextDummy = ListOfDataArrays[Time + 1] #same, for next time stamp
 
             if int(DummyArray2[i][8]) == 1: #if it's supposed to be tracked
-                #if DummyArray2[i][L] == 0.0 and Time%10 == 0.0:
-                  #  print("Zero!", ListOfTimeStamps[Time])
                     
-                if DummyArray2[i][L] != 0.0 and PreviousDummy[i][L] == 0.0 and BeginLossHad == False: #check if begin loss occured
+                if (DummyArray2[i][0] * DummyArray2[i][1]) != 0.0 and (PreviousDummy[i][0] * PreviousDummy[i][1]) == 0.0 and BeginLossHad == False: #check if begin loss occured
                     BeginLossHad = True
-                    CountTracks += 1
-                    #print("Begin loss ends!", ListOfTimeStamps[Time])
+                    TrackBegin = ListOfTimeStamps[Time]
                 
-                if DummyArray2[i][L] == 0.0 and BeginLossHad == True: #this is not the first loss -> unexpected!
+                if (DummyArray2[i][0] * DummyArray2[i][1]) == 0.0 and BeginLossHad == True: #this is not the first loss -> unexpected!
                     if LossNoted == False: #only first 0 detected, we don't want to record every 0
                         RunningLossList = [] #create mini-list for singe loss data
+                        SaveTimeDummy = Time
                         time_begin = ListOfTimeStamps[Time]
                         RunningLossList.append(time_begin)
                         LossNoted = True #set to true to not note further 0s in the loss
 
                     if NextDummy[i][8] == 0.0: #oh it was end loss! after 0s it's not supposed to be tracked 
-                       # print("End loss!", ListOfTimeStamps[Time])
+                        TrackEnd = ListOfTimeStamps[SaveTimeDummy-1]
                         BeginLossHad = False
                         LossNoted = False
 
-                if DummyArray2[i][L] != 0.0 and LossNoted == True: #loss ends! we see something right after after 0
+                if (DummyArray2[i][0] * DummyArray2[i][1]) != 0.0 and LossNoted == True: #loss ends! we see something right after after 0
                     time_end = ListOfTimeStamps[Time - 1] #I assume time_end to be the time of first non-zero reading 
                     sat_id = i
                     td = time_end-time_begin
                     duration = td.total_seconds() + 1
-                    if duration > 20: #cut-off
-                        RunningLossList.append(time_end)
-                        RunningLossList.append(duration)
-                        RunningLossList.append(sat_id)
-                        OverviewTable.append(RunningLossList)
-                        if FirstUnexLossAlHad == False:
-                            CountTrackWLoss += 1
-                            FirstUnexLossAlHad = True
+                    RunningLossList.append(time_end)
+                    RunningLossList.append(duration)
+                    RunningLossList.append(sat_id)
+                    OverviewTable.append(RunningLossList)
 
                     LossNoted = False #finished gathering data from one loss
+                
+                if (DummyArray2[i][0] * DummyArray2[i][1]) != 0.0 and NextDummy[i][8] == 0.0:
+                    TrackEnd = ListOfTimeStamps[Time]
+                    TD = TrackEnd - TrackBegin
+                    TrackDuration = TD.total_seconds() + 1
+                    TrackDurationCount += TrackDuration
 
             elif int(DummyArray2[i][8]) == 0.0:
                 BeginLossHad = False
                 LossNoted = False
-                FirstUnexLossAlHad = False
 
-    OverviewTable = np.array(OverviewTable)            
+        TrackDurations.append(TrackDurationCount)
 
-    return OverviewTable, CountTracks, CountTrackWLoss
+    OverviewTable = np.array(OverviewTable)
+    TrackDurations = np.sum(TrackDurations)          
+
+    return OverviewTable, TrackDurations
 
 
-table, tracks, tracks_loss = FindLosses(OpenReadNomandRedV2.ListOfDataArrays, OpenReadNomandRedV2.ListOfTimeStamps, 'L2')
+table, tracks_total_duration = FindLosses(OpenReadNomandRedV2.ListOfDataArrays, OpenReadNomandRedV2.ListOfTimeStamps)
 
 print(#"Loss Table:", "\n", table,
       "\n Nr of losses:", len(table),
       "\n Total duration:", np.sum(table[:, 2], axis=0), "s",
       "\n Average duation time:", np.average(table[:, 2], axis=0), "s"
-      "\n Median duation time:",np.median(table[:, 2], axis=0), "s",
-      "\n Percentage of losses:", 100 * len(table) / len(OpenReadNomandRedV2.ListOfDataArrays), "%")  # ask and change later
-print("tracks:", tracks,
-      "\ntracks with loss:" , tracks_loss, 
-      "\n ratio is", tracks_loss/tracks)
+      "\n Median duation time:", np.median(table[:, 2], axis=0), "s",
+      "\n Percentage of losses:", np.sum(table[:, 2], axis=0)/tracks_total_duration)
 
 
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
