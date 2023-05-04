@@ -13,10 +13,6 @@ Fixing ideas:
 
 def FindLosses(ListOfDataArrays, ListOfTimeStamps):
     print("we started")
-#    if str(L2orL1) == "L2": #pick which loss we're looking at
- #       L = 1
-  #  if str(L2orL1) == "L1":
-   #     L = 0
 
     OverviewTable = []
     TrackDurations = []
