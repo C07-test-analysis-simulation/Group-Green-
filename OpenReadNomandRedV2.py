@@ -4,6 +4,11 @@
 import numpy as np
 from datetime import datetime
 
+'''
+General notes & remarks:
+- THIS IS FINAL VERSION (04.05)
+'''
+
 def GetTimeStamp(header): #basically i just make a timestamp here so yeah, if you want to see how it works read https://docs.python.org/3/library/datetime.html or google
     dummylist = 6*[0]
     for i in range(len(dummylist)):

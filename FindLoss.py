@@ -6,9 +6,7 @@ from datetime import datetime
 General notes & remarks:
 - I assume time_end as time of first non-zero reading after (unexpected) loss
 - as data is appended during the checking, OverviewTable is kinda ordered with increasing time & sat_id since we check it in that order
-
-Fixing ideas:
-- re-define the percentage (duration of loss vs duration of track ?)
+- THIS IS FINAL VERSION (04.05)
 '''
 
 def FindLosses(ListOfDataArrays, ListOfTimeStamps):

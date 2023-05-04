@@ -2,6 +2,11 @@ import numpy as np
 from FindLoss import table, tracks_total_duration
 import matplotlib.pyplot as plt
 
+'''
+General notes & remarks:
+- THIS IS FINAL VERSION (04.05)
+'''
+
 durationlist = table[:, 2]
 width = 20
 bins = range(int(np.min(durationlist)), int(np.max(durationlist))+width+1, width)
