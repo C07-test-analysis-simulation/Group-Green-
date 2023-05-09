@@ -116,8 +116,8 @@ for i in range(29): #This way all files can be opened at once, making one big li
     print(i)
     index = 2450+10*i #This stems from the way the files are named.
     #Remember to update path and set NOM to True/False according to what you want!
-    filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data nom\To read\repro.goce{}.13o".format(index)
+    filename = r"C:\Users\Acer NITRO\Desktop\AE STUDIES\Year 2\Q3\Project\GOCE data\Observation data red\To read\repro.goce{}.13o".format(index)
     lines = ReadFile(filename)
-    CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=True)
+    CurrentListOfDataArrays, CurrentListOfTimeStamps = ReadRest(lines, NOM=False)
     ListOfTimeStamps += CurrentListOfTimeStamps #"Append the days to create the month.
     ListOfDataArrays += CurrentListOfDataArrays

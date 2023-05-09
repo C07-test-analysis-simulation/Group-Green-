@@ -89,5 +89,4 @@ print(#"Loss Table:", "\n", table,
 #structure: columns -> [time_begin (date format), time_end (date format), duration (seconds), sat_id (int)]
 #           rows -> all losses "listed" (so length is total nr of losses)
 #to use: - copy names ListOfDataArrays, ListOfTimeStamps (imported from OpenReadNomandRedV2)
-#        - ENTER "L2" or "L1" (AS STRING!!!) to pick whether you want to track L2 or L1 losses
 #        - dd= table[0][0].strftime("%m/%d/%Y, %H:%M:%S.%f") -> date format to string
